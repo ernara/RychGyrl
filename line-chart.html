@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+	<div class="col-xl-1"  id="inputs" style="width: 25%; float:left  ">
+		<p>Pradinė suma:<input type="number" name="ps" id="ps" /></p>
+		<p>Procentai:<input type="number" name="p" id="p" /></p>
+		<p>Metai:<input type="number" name="m" id="m" /></p>
+		<p>Investuojama suma per mėnesį: <input type="number" name="is" id="is" /></p>
+		<p><button class="btn btn-primary" id="train" type="submit" >Braižyti</button></p>
+	</div>
+
+<head>  
+<meta charset="UTF-8">
+
+
+<script>
+window.onload = function () {
+
+	var dps = [];
+	var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title:{
+      text: "Rych Gyrl",
+      },
+      axisX: {
+		title: "Months",
+	  },
+	  axisY:{
+		title: "Money",
+	  },
+	data: [{        
+		type: "line",       
+		dataPoints: dps
+	}]
+});
+	function myFunction() {
+	dps.length = 0;
+	var ps = document.getElementById("ps").value;
+	var p = document.getElementById("p").value;
+	var m = document.getElementById("m").value;
+	var is = document.getElementById("is").value;
+	dps.push({
+		x: 0,
+		y: parseFloat(ps)
+	});
+
+	for (i = 1; i <= m*12 ;i++) {
+		ps = parseFloat(ps)+parseFloat(ps)/100*parseFloat(p)/12+parseFloat(is) ;
+		ps = parseFloat(ps).toFixed(2);
+		console.log(i);
+		console.log(ps);
+		dps.push({
+		x: i,
+		y: parseFloat(ps)
+    });
+	}
+	
+	chart.render();
+	
+	}
+	
+	var renderButton = document.getElementById("train");
+	renderButton.addEventListener("click", myFunction);
+	chart.render();
+}
+
+
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 100%; width: 65%; float: left"  ></div>
+<script src="canvasjs.min.js"></script>
+</body>
+</html>
