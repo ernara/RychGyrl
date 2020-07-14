@@ -17,7 +17,7 @@ window.onload = function () {
       },
       axisX: {
 		title: "Metai",
-		interval:1,
+		//interval:1,
 		minimum:0,
 	  },
 	  axisY:{
@@ -34,12 +34,35 @@ window.onload = function () {
 	var ps = document.getElementById("ps").value;
 	var p = document.getElementById("p").value;
 	var m = document.getElementById("m").value;
-	var is = document.getElementById("is").value;
+	var mi = document.getElementById("mi").value;
 	var mp = document.getElementById("mp").checked;
 	
+	if (ps.length==0)
+	{
+		ps=0;
+	}
+	if (p.length==0)
+	{
+		p=0;
+	}
+	if (m.length==0)
+	{
+		m=0;
+	}
+	if (mi.length==0)
+	{
+		mi=0;
+	} 
+	
+	var sx = clearString(String(Math.floor(m/10)));
+	console.log(m + " " + Math.floor(m/10) + " " + sx);
+	chart.options.axisX.interval= chooseInt(sx);
+	//console.log(sx +" " +chart.options.axisX.interval + " ");
+
 	dps.push({
 		x: 0,
-		y: parseFloat(ps)
+		y: parseFloat(ps),
+		markerColor: "red", 
 	});
 
 	var che = 1;
@@ -50,7 +73,7 @@ window.onload = function () {
 	}
 
 	for (i = 1; i <= m*che ;i++) {
-		ps = parseFloat(ps)+parseFloat(ps)/100*parseFloat(p)/che+parseFloat(is)*12/che ;
+		ps = (parseFloat(ps)+parseFloat(ps)/100*parseFloat(p)/che)+(parseFloat(mi)*12/che) ;
 		ps = parseFloat(ps).toFixed(2);
 		if (i%che==0)
 		{
@@ -60,12 +83,13 @@ window.onload = function () {
     	});
 		}
 	}
+
+	dps[dps.length-1].markerColor= "DarkSlateGrey";
 	
 	var intervalas=parseInt(dps[dps.length-1].y/8);
 	var dydis = (Math.floor(Math.log10(intervalas)));
 	var inte = intervalas-intervalas%(Math.pow(10,dydis));
 	var str = String(inte)
-	console.log(str);
 	if (str[0]>'5')
 	{
 		inte-= ((parseInt(str[0]-5))*Math.pow(10,dydis));
@@ -116,22 +140,75 @@ window.onload = function () {
 
 	}
 	
-	var renderButton = document.getElementById("train");
+	var renderButton = document.getElementById("brai");
 	renderButton.addEventListener("click", myFunction);
 	chart.render();
 }
 
+function error() {
+  alert("I am an alert box!");
+}
+
+function clearString(str){
+
+	for (var i=1;i<str.length;i++)
+	{
+		str = str.substring(0, i) + '0' + str.substring(i + 1);
+	}
+	return str;
+}
+
+function chooseInt(sx){
+	
+	if (sx[0]>7)
+	{
+		sx = '1' + '0' + sx.substring(1,sx.length);
+	}
+
+	else if (sx[0]>5 )
+	{
+		sx = '5' + sx.substring(1,sx.length);
+	}
+
+	else if (sx[0]==5)
+	{
+
+	}
+
+	else if (sx[0]>2 && sx.length>1)
+	{
+		sx = '2' + '5' + sx.substring(2,sx.length);
+	}
+
+	else if (sx[0]>1)
+	{
+		sx = '5' + sx.substring(1,sx.length);
+	}
+	
+	else
+	{
+		sx = '1' + sx.substring(1,sx.length);
+	}
+
+	return parseInt(sx);
+	
+}
+
 </script>
 <body>
-	<div  id="inputs" style="margin:0px; width: 100%; height: 36vh;  margin: 0; padding : 0">
-		<p><input class="form-control input-sm" placeholder="Pradinė suma" type="number" name="ps" id="ps"  /></p>
-		<p><input class="form-control input-sm" placeholder="Procentai" type="number" name="p" id="p"  /></p>
-		<p><input class="form-control input-sm" placeholder="Metai" type="number" name="m" id="m"  /></p>
-		<p> <input class="form-control input-sm" placeholder="Mėnesinė įmoka" type="number" name="is" id="is"  /></p>
-		<p> <button class="btn btn-primary btn-primary" id="train" type="submit" >Braižyti</button>   Mėnesinės palūkanos: <input type="checkbox" name = "mp", id="mp" checked /></p>
+	<div class="wrapper">
+
+		<div class="one"  id="inputs" style=" margin:0px; width: 100%; margin: 0; padding : 0; display: block ">
+			<p><input class="form-control input-sm" placeholder="Pradinė suma" type="number" name="ps" id="ps"  /></p>
+			<p><input class="form-control input-sm" placeholder="Procentai" type="number" name="p" id="p"  /></p>
+			<p><input class="form-control input-sm" placeholder="Metai" type="number" name="m" id="m"  /></p>
+			<p> <input class="form-control input-sm" placeholder="Mėnesinė įmoka" type="number" name="mi" id="mi"  /></p>
+			<p> <button class="btn btn-primary btn-primary" id="brai" type="submit" >Braižyti</button>   Mėnesinės palūkanos: <input type="checkbox" name = "mp", id="mp" checked /></p>
+		</div>
+
+		<div class="two" id="chartContainer" style="position:static"  ></div>
 	</div>
 	
-	<div id="chartContainer" style=" height: 62vh; width: 100vw; margin: 0; padding : 0"  ></div>
 <script src="canvasjs.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
